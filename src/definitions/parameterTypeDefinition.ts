@@ -1,0 +1,1 @@
+export const PARAMETER_TYPE_BAKING_STATUS = 1;

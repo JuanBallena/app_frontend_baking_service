@@ -1,0 +1,3 @@
+export const PARAMETER_FOR_BAKING = 1;
+export const PARAMETER_READY_TO_DELIVER = 2;
+export const PARAMETER_DELIVERED = 3;

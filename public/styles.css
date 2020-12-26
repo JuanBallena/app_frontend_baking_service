@@ -1,0 +1,15 @@
+/* body {
+    font-family: 'Muli', sans-serif;
+} */
+
+#template table thead tr th {
+    text-transform: uppercase;
+    font-weight: normal;
+    color: var(--v-info-base);
+}
+
+@media (max-width: 610px) {
+    #template table thead tr th {
+        display: none;
+    }
+}

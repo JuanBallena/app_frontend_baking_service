@@ -1,0 +1,4 @@
+export const RESPONSE_CODE_OK = 200;
+export const RESPONSE_CODE_CREATED = 201;
+export const RESPONSE_CODE_NO_CONTENT = 204;
+export const RESPONSE_CODE_BAD_REQUEST = 400;
