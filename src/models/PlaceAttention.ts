@@ -2,7 +2,6 @@ export class PlaceAttention {
 
   public id: number
   public name: string
-  public abbreviation: string
 
   constructor(
     id: number,
@@ -11,11 +10,6 @@ export class PlaceAttention {
   ) {
     this.id = id;
     this.name = name;
-    this.abbreviation = abbreviation;
-  }
-
-  public hasAbbreviation(): boolean {
-    return this.abbreviation != '';
   }
 }
 

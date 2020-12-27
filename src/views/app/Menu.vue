@@ -3,13 +3,15 @@
     <v-list-item two-line>
       <v-list-item-content>
         <v-list-item-title class="menu__title">
-          Menú
+          El Padrino
         </v-list-item-title>
+        <v-list-item-subtitle>
+          Menú
+        </v-list-item-subtitle>
       </v-list-item-content>
     </v-list-item>
 
     <v-list-item-group active-class="">
-      <!-- <ItemMenuComponent icon="fa-home" text="Inicio" routeName="Dashboard" /> -->
 
       <ItemMenuComponent icon="far fa-sticky-note" text="Boletas" routeName="BakeTicketList" />
 
@@ -17,9 +19,9 @@
       
       <ItemMenuComponent icon="fas fa-store-alt" text="Locales" routeName="PlacesAttentionList" />
 
+      <ItemMenuComponent icon="fas fa-chart-bar" text="Reportes" routeName="Reports" />
+
       <ItemMenuComponent icon="fas fa-wrench" text="Ajustes" routeName="SettingList" />
-
-
     </v-list-item-group>
   </v-list>
 </template>

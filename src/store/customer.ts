@@ -39,6 +39,7 @@ export default {
 
         if (Response.created(responseCode)) {
           commit('SET_SUCCESSFUL_REGISTRATION', true);
+          commit('SET_CUSTOMER', res.data['data']);
         }
 
         if (Response.badRequest(responseCode)) {

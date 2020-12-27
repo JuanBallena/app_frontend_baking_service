@@ -101,7 +101,10 @@ export default Vue.extend({
       if (this.successfulAuthentication) {
 
         localStorage.setItem('username', this.authenticatedUser.username);
-        localStorage.setItem('currentActivity', this.authenticatedUser.currentActivity);
+        localStorage.setItem('idCurrentActivity', this.authenticatedUser.currentActivity.id);
+        localStorage.setItem('currentActivityDescription', this.authenticatedUser.currentActivity.description);
+        localStorage.setItem('currentActivity', JSON.stringify(this.authenticatedUser.currentActivity));
+
         this.SET_SUCCESSFUL_AUTHENTICATION(false);
         this.SET_ERROR_MESSAGE('');
         this.$router.push({ name: 'BakeTicketList'})

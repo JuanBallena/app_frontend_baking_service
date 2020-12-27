@@ -30,14 +30,6 @@ export function addPlaceAttentionNode(dataPost: any): object {
   };
 }
 
-export function addSmsNode(dataPost: any): object {
-  return {
-    sms : {
-      data: dataPost
-    }
-  };
-}
-
 export function addSettingNode(dataPost: any): object {
   return {
     setting : {

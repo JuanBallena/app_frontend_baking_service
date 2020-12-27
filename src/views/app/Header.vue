@@ -31,12 +31,12 @@ export default Vue.extend({
 });
 </script>
 
-<style lang="sass" scoped>
+<style scoped>
 
-#header
-  background: white
-
-.header__icon-bars
-  color: var(--v-primary-base)
-  
+#header {
+  background: white;
+}
+.header__icon-bars {
+  color: var(--v-primary-base);
+}
 </style>

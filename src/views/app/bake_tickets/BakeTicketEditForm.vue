@@ -2,6 +2,22 @@
   <div>
     <v-row>
       <v-col cols="12" lg="6" md="6" sm="6">
+        <TextInputComponent
+          label="Número de boleta"
+          placeholder="Escriba número de boleta"
+          v-model="bakeTicket.numberAttention"
+          :error="errors.numberAttention"
+        />
+      </v-col>
+       <v-col cols="12" lg="6" md="6" sm="6">
+          <TextInputComponent
+            label="Fuentes de hornado"
+            placeholder="Escriba número de fuentes"
+            v-model="bakeTicket.numberBaked"
+            :error="errors.numberBaked"
+          />
+        </v-col>
+      <v-col cols="12" lg="6" md="6" sm="6">
         <SelectInputComponent
           v-model="bakeTicket.activity.id"
           label="Actividad"
@@ -19,14 +35,6 @@
           itemText="name"
           itemValue="id"
           :error="errors.idPlaceAttention"
-        />
-      </v-col>
-      <v-col cols="12" lg="6" md="6" sm="6">
-        <TextInputComponent
-          label="Número de atención"
-          placeholder="Escriba número de boleta"
-          v-model="bakeTicket.numberAttention"
-          :error="errors.numberAttention"
         />
       </v-col>
       <v-col cols="12">
@@ -69,13 +77,15 @@ export default Vue.extend({
         idCustomer: '',
         idPlaceAttention: '',
         idActivity: '',
-        numberAttention: ''
+        numberAttention: '',
+        numberBaked: ''
       },
       errors: {
         idCustomer: '',
         idPlaceAttention: '',
         idActivity: '',
-        numberAttention: ''
+        numberAttention: '',
+        numberBaked: ''
       }
     }
   },
@@ -96,7 +106,8 @@ export default Vue.extend({
         idCustomer: this.bakeTicket.customer.id,
         idActivity: this.bakeTicket.activity.id,
         idPlaceAttention: this.bakeTicket.placeAttention.id,
-        numberAttention: this.bakeTicket.numberAttention
+        numberAttention: this.bakeTicket.numberAttention,
+        numberBaked: String(this.bakeTicket.numberBaked)
       }
 
       await this.updateBakeTicket(dataPost);
@@ -109,6 +120,7 @@ export default Vue.extend({
           if (error['idActivity']) this.errors.idActivity = error['idActivity'];
           if (error['numberAttention']) this.errors.numberAttention = error['numberAttention'];
           if (error['numeroAtencion']) this.errors.numberAttention = error['numeroAtencion'];
+          if (error['numberBaked']) this.errors.numberBaked = error['numberBaked'];
         })
         this.SET_ERRORS_MESSAGE([]);
       }

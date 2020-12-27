@@ -1,11 +1,12 @@
+import { Activity } from './Activity';
 export class AuthenticatedUser {
 
   public username: number
-  public currentActivity: number
+  public currentActivity: Activity
 
   constructor(
     username: number,
-    currentActivity: number
+    currentActivity: Activity
   ) {
     this.username = username;
     this.currentActivity = currentActivity;

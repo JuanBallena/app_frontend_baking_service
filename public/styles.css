@@ -8,8 +8,22 @@
     color: var(--v-info-base);
 }
 
+#visible-only-sm {
+    display: block;
+}
+
+#visible-only-xs {
+    display: none;
+}
+
 @media (max-width: 610px) {
     #template table thead tr th {
         display: none;
+    }
+    #visible-only-sm {
+        display: none;
+    }
+    #visible-only-xs {
+        display: block;
     }
 }

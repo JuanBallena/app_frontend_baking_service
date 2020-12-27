@@ -17,7 +17,7 @@ export default {
   },
 
   mutations: {
-    SET_BAKE_TICKETS(state: { bakeTickets: BakeTicket[] }, data: any[]) {
+    SET_BAKE_TICKETS(state: { bakeTickets: BakeTicket[]; totalPages: number }, data: any[]) {
       state.bakeTickets = [];
       data.forEach((bakeTicketDto) => { state.bakeTickets.push(toBakeTicketModel(bakeTicketDto)) });
     },
@@ -34,25 +34,14 @@ export default {
       state.successfulRegistration = data;
     },
 
-    REPLACE_BAKING_STATUS(state: { bakeTickets: BakeTicket[] }, data: any) {
-      state.bakeTickets[data['position']].bakingStatus = data['bakingStatus'];
-    },
-
     SET_ERRORS_MESSAGE(state: { errorsMessage: string[] }, data: any) {
       state.errorsMessage = data;
-    },
-
-    REPLACE_BAKE_TICKET(state: { bakeTickets: BakeTicket[] }, data: any) {
-      state.bakeTickets[data['position']].customer = data['customer'];
-      state.bakeTickets[data['position']].placeAttention = data['placeAttention'];
-      state.bakeTickets[data['position']].activity = data['activity'];
-      state.bakeTickets[data['position']].numberAttention = data['numberAttention'];
     }
   },
 
   actions: {
     async getBakeTickets({ commit }: any, requestParameters: string) {
-
+      
       try {
         const res = await axios.get(Api.getUrlApi() + `/bake-tickets${ requestParameters || '' }`, Api.getAuthorization())
         const responseCode = res.data['responseCode'];
@@ -107,6 +96,7 @@ export default {
 
         if (Response.created(responseCode)) {
           commit('SET_SUCCESSFUL_REGISTRATION', true);
+          commit('SET_BAKE_TICKET', res.data['data']);
         }
 
         if (Response.badRequest(responseCode)) {
@@ -125,27 +115,6 @@ export default {
         const res = await axios.put(Api.getUrlApi() + `/bake-tickets/${ dataPost['idBakeTicket'] }`, dto, Api.getAuthorization())
         const responseCode = res.data['responseCode'];
         
-        if (Response.created(responseCode)) {
-          commit('SET_SUCCESSFUL_REGISTRATION', true);
-          commit('SET_BAKE_TICKET', res.data['data']);
-        }
-
-        if (Response.badRequest(responseCode)) {
-          commit('SET_ERRORS_MESSAGE', res.data['errorsMessage']);
-        }
-        Response.showResponse(res);
-      } catch (e) {
-        Response.verifyStatusResponse(e.response.status);
-      }
-    },
-
-    async updateBakeTickeCustomer({ commit }: any, dataPost: any) {
-
-      try {
-        const dto = Node.addBakeTicketNode(dataPost);
-        const res = await axios.put(Api.getUrlApi() + `/bake-tickets/${ dataPost['idBakeTicket'] }/customer`, dto, Api.getAuthorization())
-        const responseCode = res.data['responseCode'];
-
         if (Response.created(responseCode)) {
           commit('SET_SUCCESSFUL_REGISTRATION', true);
           commit('SET_BAKE_TICKET', res.data['data']);

@@ -1,7 +1,8 @@
 import * as ResponseDefinition from '@/definitions/responseDefinition';
 
 export function showResponse(res: any): void {
-  // console.log(res.data['responseCode'] + " : " + res.data['responseMessage']);
+
+  // console.log(res.data['type'] + " => " + res.data['responseCode'] + " : " + res.data['responseMessage']);
   // console.log(res.data['errorsMessage']);
 }
 

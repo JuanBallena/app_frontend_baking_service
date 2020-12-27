@@ -29,24 +29,16 @@
     <DialogFormComponent
       v-model="dialogForm.visible"
       title="Editar local"
-      maxWidth="600"
+      maxWidth="400"
       @click:close="dialogForm.visible = false"
     >
       <v-row>
-        <v-col cols="12" lg="6" md="6" sm="6">
+        <v-col cols="12">
           <TextInputComponent
             label="Nombre"
             v-model="placeAttentionTemporary.name"
             placeholder="Escriba nombre de su local"
             :error="errors.name"
-          />
-        </v-col>
-        <v-col cols="12" lg="6" md="6" sm="6">
-          <TextInputComponent
-            label="Abreviación"
-            v-model="placeAttentionTemporary.abbreviation"
-            placeholder="Escriba una abreviación de su local"
-            :error="errors.abbreviation"
           />
         </v-col>
         <v-col cols="12" lg="12">
@@ -91,7 +83,6 @@ export default Vue.extend({
       headers: [
         { text: '#', value: 'number' },
         { text: 'Nombre', value: 'name'},
-        { text: 'Abreviatura', value: 'abbrev'},
         { text: 'Acciones', value: 'actions' },
       ],
       dialogForm: {
@@ -104,12 +95,10 @@ export default Vue.extend({
       placeAttentionTemporary: {} as PlaceAttention,
       positionPlaceAttentionTemporary: 0,
       errors: {
-        name: '',
-        abbreviation: '',
+        name: ''
       },
       errorsDefault: {
-        name: '',
-        abbreviation: ''
+        name: ''
       }
     }
   },
@@ -119,21 +108,20 @@ export default Vue.extend({
   },
 
   methods: {
-    ...mapMutations('placeAttentionModule', ['SET_SUCCESSFUL_REGISTRATION',
-      'SET_PLACE_ATTENTION','SET_ERRORS_MESSAGE','REPLACE_PLACE_ATTENTION']),
+    ...mapMutations('placeAttentionModule', ['SET_SUCCESSFUL_REGISTRATION','SET_ERRORS_MESSAGE']),
     ...mapActions('placeAttentionModule', ['updatePlaceAttention','getPlacesAttention']),
 
     async edit(placeAttention: PlaceAttention): Promise<void> {
       this.positionPlaceAttentionTemporary = this.items.indexOf(placeAttention);
       this.placeAttentionTemporary = Object.assign({}, placeAttention);
+      this.errors = Object.assign({}, this.errorsDefault);
       this.dialogForm.visible = true;
     },
 
     async update(): Promise<void> {
       const dataPost = {
         idPlaceAttention: this.placeAttentionTemporary.id,
-        name: this.placeAttentionTemporary.name,
-        abbreviation: this.placeAttentionTemporary.abbreviation
+        name: this.placeAttentionTemporary.name
       }
 
       await this.updatePlaceAttention(dataPost);
@@ -142,24 +130,18 @@ export default Vue.extend({
       if (this.errorsMessage) {
         this.errorsMessage.forEach((error: { [x: string]: string }) => {
           if (error['name']) this.errors.name = error['name'];
-          if (error['abbreviation']) this.errors.abbreviation = error['abbreviation'];
         })
         this.SET_ERRORS_MESSAGE([]);
       }
 
       if (this.successfulRegistration) {
-        // const dataToUpdate = {
-        //   position: this.positionPlaceAttentionTemporary,
-        //   name: this.placeAttention.name,
-        //   abbreviation: this.placeAttention.abbreviation
-        // }
+
         this.dialogForm.visible = false;
         this.snackbar.text = "Se guardó correctamente";
         this.snackbar.visible = true;
-        // this.REPLACE_PLACE_ATTENTION(dataToUpdate);
+
         await this.getPlacesAttention();
         this.SET_SUCCESSFUL_REGISTRATION(false);
-        this.SET_PLACE_ATTENTION({});
       }
     }
   }

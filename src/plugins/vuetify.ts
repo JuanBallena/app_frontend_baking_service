@@ -19,7 +19,7 @@ export default new Vuetify({
         info: '#8D959B',
         success: '#4CAF50',
         warning: '#FFC107',
-        paginateColor: '#8D959B',
+        paginateColor: '#0D47A1',
       },
     },
   },

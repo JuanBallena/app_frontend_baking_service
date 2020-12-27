@@ -1,11 +1,7 @@
 <template>
   <div>
-    
-    <v-row>
-      <v-col cols="" lg="12">
-        <h2>Ajustes</h2>
-      </v-col>
-      <v-col cols="12" lg="12" v-if="noData">
+    <v-row v-if="noData">
+       <v-col cols="12" lg="12" >
 
         <div class="text-center mt-12">
           <v-progress-circular
@@ -16,18 +12,24 @@
         </div>
 
       </v-col>
-      <v-col cols="12" lg="12" v-else>
+    </v-row>
+    <v-row v-else>
+      <v-col cols="" lg="12">
+        <h2>Ajustes</h2>
+      </v-col>
+      <v-col cols="12" lg="12">
         <v-row>
           <v-col cols="12" lg="6" md="6" sm="6" class="py-0">
-            <p class="text-uppercase primary--text">{{ settingCurrentActivity.name }}</p>
-            <p class="info--text">{{ settingCurrentActivity.description }}</p>
+            <div class="primary--text font-weight-normal">{{ settingCurrentActivity.name }}</div>
+            <div class="info--text font-weight-normal">{{ settingCurrentActivity.description }}</div>
+            <br>
           </v-col>
           <v-col cols="12" lg="6" md="6" sm="6" class="py-0">
             <v-select
-              v-model="idActivity"
+              v-model="activity"
               :items="activities"
               item-text="description"
-              item-value="id"
+              return-object
               class="select-activities"
               no-data-text="Sin registros"
               dense
@@ -56,19 +58,17 @@ export default Vue.extend({
         name: '',
         description: ''
       },
-      idActivity: 0,
+      activity: JSON.parse(String(localStorage.getItem('currentActivity'))),
       positionCurrentActivity: 0
     }
   },
 
   async created(): Promise<void> {
     await this.getSettings();
-    await this.getActivities();
-
     this.settingCurrentActivity.id = this.settings[this.positionCurrentActivity].id;
     this.settingCurrentActivity.name = this.settings[this.positionCurrentActivity].name;
     this.settingCurrentActivity.description = this.settings[this.positionCurrentActivity].description;
-    this.idActivity = this.settings[this.positionCurrentActivity].value;
+    await this.getActivities();
   },
 
   computed: {
@@ -89,14 +89,16 @@ export default Vue.extend({
 
       const dataPost = {
         idSetting: this.settingCurrentActivity.id,
-        value: this.idActivity
+        value: this.activity.id
       }
 
       await this.updateSettingValue(dataPost);
 
       if (this.successfulRegistration) {
         this.SET_SUCCESSFUL_REGISTRATION(false);
-        localStorage.setItem('currentActivity', String(this.idActivity));
+        localStorage.setItem('idCurrentActivity', String(this.activity.id));
+        localStorage.setItem('currentActivityDescription', String(this.activity.description));
+        localStorage.setItem('currentActivity', JSON.stringify(this.activity));
       }
     }
   },

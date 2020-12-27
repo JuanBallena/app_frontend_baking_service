@@ -36,12 +36,6 @@ export default {
 
     SET_SUCCESSFUL_REGISTRATION(state: { successfulRegistration: boolean }, data: any) {
       state.successfulRegistration = data;
-    },
-
-    REPLACE_ACTIVITY(state: { activities: Activity[] }, data: any) {
-      state.activities[data['position']].description = data['description'];
-      state.activities[data['position']].date = data['date'];
-      state.activities[data['position']].finished = data['finished'];
     }
   },
 
@@ -57,8 +51,8 @@ export default {
           commit('SET_TOTAL_PAGES', res.data['pages']);
         } 
         Response.showResponse(res);
-      } catch(err) {
-        Response.verifyStatusResponse(err.response.status);
+      } catch (e) {
+        Response.verifyStatusResponse(e.response.status);
       }
     },
 

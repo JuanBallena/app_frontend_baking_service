@@ -46,6 +46,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
+import { mapMutations } from 'vuex';
 
 export default Vue.extend({
 
@@ -56,7 +57,11 @@ export default Vue.extend({
   },
   
   methods: {
+    ...mapMutations('bakeTicketModule', ['SET_BAKE_TICKETS','SET_TOTAL_PAGES']),
+
     logout(): void {
+      this.SET_BAKE_TICKETS([]);
+      this.SET_TOTAL_PAGES(-1);
       localStorage.clear();
       this.$router.push({ name: 'Login' });
     }

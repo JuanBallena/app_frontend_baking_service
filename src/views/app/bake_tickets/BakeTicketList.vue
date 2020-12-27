@@ -52,35 +52,38 @@
         </v-btn>
 
       </v-col>
-      <!-- <v-col cols="12" lg="6" md="6">
+      <v-col cols="12" lg="6" md="6">
 
         <SearchInputComponent
           v-model="query.text"
           @enter="search()"
           @click:icon-search="search()"
           @click:icon-clear="deleteQueryText()"
-          placeholder="Escriba número de atención o nombre de cliente" 
+          placeholder="Número de boleta o cliente" 
         />
 
-      </v-col> -->
+      </v-col>
+      <v-col cols="12" class="pt-0" id="visible-only-xs">
+        <v-pagination
+          class="text-center mt-4"
+          v-model="page"
+          color="paginateColor"
+          :length="totalPages"
+          :total-visible="totalVisible"
+          @input="changePage()"
+        >
+        </v-pagination>
+      </v-col>
     </v-row>
 
     <DialogFormComponent
       v-model="dialogForm.visible"
       :title="'Registrar boleta - ' + subTitleDialog"
-      maxWidth="600"
+      maxWidth="400"
       @click:close="dialogForm.visible = false"
     >
       <v-row>
-        <v-col cols="12" lg="6" md="6" sm="6">
-          <TextInputComponent
-            label="Dni"
-            placeholder="8 dígitos"
-            v-model="newBakeTicket.document"
-            :error="errors.document"
-          />
-        </v-col>
-        <v-col cols="12" lg="6" md="6" sm="6">
+        <v-col cols="12">
           <TextInputComponent
             label="Cliente"
             placeholder="Escriba nombre y apellido"
@@ -88,22 +91,23 @@
             :error="errors.name"
           />
         </v-col>
-        <v-col cols="12" lg="6" md="6" sm="6">
+        <v-col cols="12">
           <TextInputComponent
-            label="Nro. celular"
-            placeholder="9 dígitos"
-            v-model="newBakeTicket.phone"
-            :error="errors.phone"
-          />
-        </v-col>
-        <v-col cols="12" lg="6" md="6" sm="6">
-          <TextInputComponent
-            label="Número de atención"
+            label="Número de boleta"
             placeholder="Escriba número de boleta"
             v-model="newBakeTicket.numberAttention"
             :error="errors.numberAttention"
           />
         </v-col>
+        <v-col cols="12">
+          <TextInputComponent
+            label="Fuentes de hornado"
+            placeholder="Escriba número de fuentes"
+            v-model="newBakeTicket.numberBaked"
+            :error="errors.numberBaked"
+          />
+        </v-col>
+      
         <v-col cols="12">
           <SubmitButtonComponent @click="save()" />
         </v-col>
@@ -157,7 +161,7 @@ export default Vue.extend({
       size: 10,
       page: 1,
       totalVisible: 10,
-      idActivity: Number(localStorage.getItem('currentActivity')),
+      idActivity: Number(localStorage.getItem('idCurrentActivity')),
       idPlaceAttention: 1,
       query: {
         text: '',
@@ -167,41 +171,37 @@ export default Vue.extend({
         visible: false
       },
       newBakeTicketDefault: {
+        numberAttention: '',
         name: '',
-        document: '',
-        phone: '',
-        numberAttention: ''
+        numberBaked: '1'
       },
       newBakeTicket: {
+        numberAttention: '',
         name: '',
-        document: '',
-        phone: '',
-        numberAttention: ''
+        numberBaked: '1'
       },
       errorsDefault: {
+        numberAttention: '',
         name: '',
-        document: '',
-        phone: '',
-        numberAttention: ''
+        numberBaked: ''
       },
       errors: {
+        numberAttention: '',
         name: '',
-        document: '',
-        phone: '',
-        numberAttention: ''
+        numberBaked: ''
       },
       snackbar: {
         text: '',
         visible: false
       },
       subTitleDialog: 'El Padrino',
-      sort: '%numberAttention%',
-      direction: '%asc%'
+      sort: 'numberAttention',
+      direction: 'asc'
     }
   },
 
   async created(): Promise<void> {
-      await this.getBakeTickets(`?idActivity=${this.idActivity}&idPlaceAttention=${this.idPlaceAttention}&page=${0}&size=${this.size}`);
+      await this.getBakeTickets(`?idActivity=${this.idActivity}&idPlaceAttention=${this.idPlaceAttention}&page=${0}&size=${this.size}&sort=${this.sort}&direction=${this.direction}`);
       await this.getPlacesAttention();
       await this.getParameters(`?idParameterType=${ParameterTypeDefinition.PARAMETER_TYPE_BAKING_STATUS}`);
       await this.getActivities();
@@ -218,15 +218,11 @@ export default Vue.extend({
     },
 
     request(): string {
-      return `?idActivity=${this.idActivity}&idPlaceAttention=${this.idPlaceAttention}&page=${this.pageApi}&size=${this.size}`;
+      return `?idActivity=${this.idActivity}&idPlaceAttention=${this.idPlaceAttention}&page=${this.pageApi}&size=${this.size}&sort=${this.sort}&direction=${this.direction}`;
     },
 
     searchRequest(): string {
-      return `?q=%${this.query.temporaryText}%&idActivity=${this.idActivity}&idPlaceAttention=${this.idPlaceAttention}&page=${this.pageApi}&size=${this.size}`;
-    },
-
-    containsErrorsMessage(): boolean {
-      return this.errorsMessage.length > 0;
+      return `?q=${this.query.temporaryText}&idActivity=${this.idActivity}&idPlaceAttention=${this.idPlaceAttention}&page=${this.pageApi}&size=${this.size}&sort=${this.sort}&direction=${this.direction}`;
     },
 
     queryTextExist(): boolean {
@@ -235,7 +231,7 @@ export default Vue.extend({
   },
 
   methods: {
-    ...mapMutations('bakeTicketModule', ['SET_ERRORS_MESSAGE','SET_SUCCESSFUL_REGISTRATION']),
+    ...mapMutations('bakeTicketModule', ['SET_ERRORS_MESSAGE','SET_SUCCESSFUL_REGISTRATION','SET_BAKE_TICKETS']),
     ...mapActions('bakeTicketModule', ['getBakeTickets','searchBakeTickets','saveBakeTickeAndCustomer']),
     ...mapActions('placeAttentionModule', ['getPlacesAttention']),
     ...mapActions('activityModule', ['getActivities']),
@@ -261,10 +257,10 @@ export default Vue.extend({
     },
 
     async getBakeTicketsBack(): Promise<void> {
-      // if (this.queryTextExist) {
-      //   await this.searchBakeTickets(this.searchRequest);
-      //   return;
-      // } 
+      if (this.queryTextExist) {
+        await this.searchBakeTickets(this.searchRequest);
+        return;
+      } 
       await this.getBakeTickets(this.request);
     },
 
@@ -285,19 +281,16 @@ export default Vue.extend({
     },
 
     async search(): Promise<void> {
-      
       this.page = 1;
       this.query.temporaryText = this.query.text || '';
-      console.log(this.searchRequest);
       await this.searchBakeTickets(this.searchRequest);
     },
 
     async save(): Promise<void> {
       const dataPost = {
         name: this.newBakeTicket.name,
-        document: this.newBakeTicket.document,
-        phone: this.newBakeTicket.phone,
         numberAttention: this.newBakeTicket.numberAttention,
+        numberBaked: this.newBakeTicket.numberBaked,
         idActivity: this.idActivity,
         idPlaceAttention: this.idPlaceAttention
       }
@@ -305,13 +298,12 @@ export default Vue.extend({
       await this.saveBakeTickeAndCustomer(dataPost);
       this.errors = Object.assign({}, this.errorsDefault);
 
-      if (this.containsErrorsMessage) {
+      if (this.errorsMessage) {
         this.errorsMessage.forEach((error: { [v: string]: string }) => {
           if (error['name']) this.errors.name = error['name'];
-          if (error['document']) this.errors.document = error['document'];
-          if (error['phone']) this.errors.phone = error['phone'];
           if (error['numberAttention']) this.errors.numberAttention = error['numberAttention'];
           if (error['numeroAtencion']) this.errors.numberAttention = error['numeroAtencion'];
+          if (error['numberBaked']) this.errors.numberBaked = error['numberBaked'];
         });
         this.SET_ERRORS_MESSAGE([]);
       }
@@ -324,15 +316,16 @@ export default Vue.extend({
         this.newBakeTicket = Object.assign({}, this.newBakeTicketDefault);
         this.SET_SUCCESSFUL_REGISTRATION(false);
       }
+    },
+
+    beforeDestroy(): void {
+      this.SET_BAKE_TICKETS([]);
     }
   }
 })
 </script>
 
 <style scoped>
-.v-progress-circular {
-  margin: 1rem;
-}
 
 .select-activities >>> .v-select__slot .v-input__icon .v-icon::before,
 .select-activities >>> .v-select__slot .v-input__icon .v-icon::after {

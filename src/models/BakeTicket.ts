@@ -10,6 +10,7 @@ export class BakeTicket {
   public customer: Customer
   public activity: Activity
   public numberAttention: string
+  public numberBaked: number
   public placeAttention: PlaceAttention
   public bakingStatus: Parameter
 
@@ -18,6 +19,7 @@ export class BakeTicket {
     customer: Customer,
     activity: Activity,
     numberAttention: string,
+    numberBaked: number,
     placeAttention: PlaceAttention,
     bakingStatus: Parameter
   ) {
@@ -25,12 +27,9 @@ export class BakeTicket {
     this.customer = customer;
     this.activity = activity;
     this.numberAttention = numberAttention;
+    this.numberBaked = numberBaked;
     this.placeAttention = placeAttention;
     this.bakingStatus = bakingStatus;
-  }
-
-  public hasPhone(): boolean {
-    return this.customer.phone != '';
   }
 
   public getColorBakingStatus(): string {
@@ -47,6 +46,7 @@ export function toBakeTicketModel(data: any): BakeTicket {
     data['customer'],
     data['activity'],
     data['numberAttention'],
+    data['numberBaked'],
     data['placeAttention'],
     data['bakingStatus']
   );

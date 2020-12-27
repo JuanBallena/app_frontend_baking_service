@@ -38,7 +38,7 @@ import HeaderComponent from '@/views/app/Header.vue';
 export default Vue.extend({
   data () {
     return {
-      drawer: true,
+      drawer: false,
     }
   },
 

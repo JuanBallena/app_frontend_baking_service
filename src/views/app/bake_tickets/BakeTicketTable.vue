@@ -4,6 +4,7 @@
       :headers="headers"
       :items="items"
       disable-sort
+      :loading="loading"
       class="elevation-1"
       hide-default-footer
       no-data-text="Sin registros"
@@ -11,15 +12,9 @@
       disable-pagination
     >
       <template v-slot:[`item.number`]="{ item }">
-        <span class="font-weight-bold">{{ item.numberAttention }}</span>
-      </template>
-      <template v-slot:[`item.phone`]="{ item }">
-        <div v-if="item.hasPhone()">
-
-          {{ item.customer.phone }}
-          
-        </div>
-        <div v-else>Sin número</div>
+        <span class="font-weight-bold primary--text">
+          {{ item.numberAttention }}
+        </span>
       </template>
       
       <template v-slot:[`item.bakingStatus`]="{ item }">
@@ -29,16 +24,16 @@
         />
       </template>
 
+      <template v-slot:[`item.numberBaked`]="{ item }">
+        {{ item.numberBaked }}
+        <v-icon small class="ml-2">fas fa-concierge-bell</v-icon>  
+      </template>
+
       <template v-slot:[`item.actions`]="{ item }">
         <IconButtonComponent
           icon="fas fa-exchange-alt"
           @click="openDialogRadios(item)"
         />
-        <!-- <IconButtonComponent
-          icon="far fa-paper-plane"
-          color="primar"
-          @click="openConfirmDialog(item)"
-        /> -->
         <IconButtonComponent 
           @click="edit(item)" 
           icon="fas fa-pen" 
@@ -47,16 +42,6 @@
 
     </v-data-table>
 
-    <!-- <ConfirmDialogComponent
-      v-if="confirmDialog.visible"
-      v-model="confirmDialog.visible"
-      :body="confirmDialog.body"
-      :title="confirmDialog.title"
-      :textButtonConfirm="confirmDialog.textButtonConfirm"
-      @click:confirm="sendTextMessage()"
-      @click:cancel="confirmDialog.visible = false"
-    /> -->
-
     <DialogFormComponent
       v-if="dialogRadios.visible"
       v-model="dialogRadios.visible"
@@ -64,9 +49,10 @@
       maxWidth="350"
       @click:close="dialogRadios.visible = false"
     >
-      <h4 class="black--text">Estado de horneado</h4>
+      <h4 class="black--text">Estado de hornado</h4>
       <v-radio-group v-model="dialogRadios.radios">
-        <v-radio 
+        <v-radio
+          class="py-1"
           v-for="(parameter, index) in bakingStatusParameters" 
           :value="parameter.id"
           :key="index" 
@@ -123,14 +109,6 @@
         </v-tab-item>
       </v-tabs-items>
     </DialogFormComponent>
-
-    <SnackbarComponent
-      v-model="snackbar.visible"
-      :text="snackbar.text"
-      icon="fas fa-paper-plane"
-      color="dark"
-      @click:close="snackbar.visible = false"
-    />
 
     <SnackbarComponent
       v-if="snackbarCreated.visible"
@@ -202,7 +180,6 @@ export default Vue.extend({
 
   data: () => {
     return {
-      // overlay: false,
       dialogRadios: {
         title: '',
         visible: false,
@@ -212,27 +189,16 @@ export default Vue.extend({
         title: '',
         visible: false
       },
-      // confirmDialog: {
-      //   title: 'Enviar SMS',
-      //   body: '',
-      //   textButtonConfirm: 'Enviar',
-      //   visible: false
-      // },
       headers: [
-        { text: 'Local', value: 'placeAttention.name'},
         { text: 'Boleta', value: 'number'},
         { text: 'Cliente', value: 'customer.name'},
-        { text: 'Contacto', value: 'phone'},
-        { text: 'Estado horneado', value: 'bakingStatus' },
+        { text: 'Fuentes de hornado', value: 'numberBaked'},
+        { text: 'Estado hornado', value: 'bakingStatus' },
         { text: 'Acciones', value: 'actions' },
       ],
-      snackbar: {
-        visible: false,
-        text: ''
-      },
       snackbarCreated: {
         visible: false,
-        text: ''
+        text: 'Se guardó correctamente'
       },
 
       bakeTicketTemporary: {} as BakeTicket,
@@ -248,45 +214,16 @@ export default Vue.extend({
   },
 
   computed: {
-    ...mapState('bakeTicketModule', ['bakeTicket', 'successfulRegistration','bakeTickets']),
-    ...mapState('smsModule', ['successfulSmsSending']),
+    ...mapState('bakeTicketModule', ['bakeTicket', 'successfulRegistration','totalPages']),
 
     loading(): boolean {
-      return this.bakeTickets.length == 0;
+      return this.totalPages == -1;
     },
   },
 
   methods: {
-    ...mapMutations('bakeTicketModule', ['REPLACE_BAKING_STATUS','SET_BAKE_TICKET',
-      'SET_SUCCESSFUL_REGISTRATION']),
-    ...mapMutations('smsModule', ['SET_SUCCESSFUL_SMS_SENDING']),
+    ...mapMutations('bakeTicketModule', ['SET_SUCCESSFUL_REGISTRATION']),
     ...mapActions('bakeTicketModule', ['updateBakeTicketBakingStatus','getBakeTickets','searchBakeTickets']),
-    ...mapActions('smsModule', ['sendSms']),
-
-    // openConfirmDialog(bakeTicket: BakeTicket): void {
-    //   this.bakeTicketTemporary = Object.assign({}, bakeTicket);
-    //   this.confirmDialog.visible = true;
-    //   this.confirmDialog.body = `Desea enviar un mensaje de texto a ${bakeTicket.customer.name}?`;
-    // },
-
-    // async sendTextMessage(): Promise<void> {
-    //   const dataPost = {
-    //     countryPrefix: '+51',
-    //     phone: this.bakeTicketTemporary.customer.phone,
-    //     message: `Saludos ${ this.bakeTicketTemporary.customer.name }, ya puedes recoger tu horneado en la Panadería El Padrino, no olvides llevar tu boleta.`
-    //   }
-      
-    //   this.confirmDialog.visible = false;
-    //   this.overlay = true;
-    //   await this.sendSms(dataPost);
-    //   this.overlay = false;
-
-    //   if (this.successfulSmsSending) {
-    //     this.snackbar.text = `Se envió un mensaje a ${ this.bakeTicketTemporary.customer.name }`;
-    //     this.snackbar.visible = true;
-    //     this.SET_SUCCESSFUL_SMS_SENDING(false);
-    //   }
-    // },
 
     openDialogRadios(bakeTicket: BakeTicket): void {
       this.bakeTicketTemporary = Object.assign({}, bakeTicket);
@@ -305,16 +242,10 @@ export default Vue.extend({
       await this.updateBakeTicketBakingStatus(dataPost);
 
       if (this.successfulRegistration) {
-        // const dataToUpdate = {
-        //   position: this.positionBakeTicketTemporary,
-        //   bakingStatus: this.bakeTicket.bakingStatus
-        // }
 
         this.dialogRadios.visible = false;
         this.getBakeTicketsBack();
-        // this.REPLACE_BAKING_STATUS(dataToUpdate);
         this.SET_SUCCESSFUL_REGISTRATION(false);
-        this.SET_BAKE_TICKET({});
       }
     },
 
@@ -335,20 +266,18 @@ export default Vue.extend({
       await this.getBakeTickets(this.request);
     },
 
-    updateBakeTicket(event: any): void {
+    updateBakeTicket(event: boolean): void {
       if (event == true) {
         this.dialogForm.visible = false;
         this.getBakeTicketsBack();
-        this.snackbarCreated.text = "Se guardó correctamente";
         this.snackbarCreated.visible = true;
       }
     },
 
-    updateCustomer(event: any): void {
+    updateCustomer(event: boolean): void {
       if (event == true) {
         this.dialogForm.visible = false;
         this.getBakeTicketsBack();
-        this.snackbarCreated.text = "Se guardó correctamente";
         this.snackbarCreated.visible = true;
       }
     }

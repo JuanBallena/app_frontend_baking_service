@@ -15,13 +15,6 @@
         {{ size * pageApi + (items.indexOf(item) + 1) }}
       </template>
 
-      <template v-slot:[`item.finished`]="{ item }">
-        <ChipComponent
-          :text="item.getFinished()"
-          :color="item.getColorFinished()"
-        />
-      </template>
-
       <template v-slot:[`item.actions`]="{ item }">
         <IconButtonComponent
         
@@ -65,13 +58,6 @@
               @save="$refs.dialogCalender.save(activityTemporary.date)"
             />
           </v-dialog>
-        </v-col>
-        <v-col cols="12">
-          <InputSwitchComponent
-            label="Finalizado"
-            v-model="activityTemporary.finished"
-            :text="activityTemporary.finished == true ? 'SI' : 'NO'"
-          />
         </v-col>
         <v-col cols="12">
           <SubmitButtonComponent
@@ -119,7 +105,6 @@ export default Vue.extend({
         { text: '#', value: 'number' },
         { text: 'Descripción', value: 'description'},
         { text: 'Fecha', value: 'date'},
-        { text: 'Estado', value: 'finished' },
         { text: 'Acciones', value: 'actions' },
       ],
       calendar: {
@@ -136,13 +121,11 @@ export default Vue.extend({
       positionActivityTemporary: 0,
       errors: {
         description: '',
-        date: '',
-        finished: false
+        date: ''
       },
       errorsDefault: {
         description: '',
-        date: '',
-        finished: false
+        date: ''
       }
     }
   },
@@ -152,14 +135,13 @@ export default Vue.extend({
   },
 
   methods: {
-    ...mapMutations('activityModule', ['SET_ACTIVITY',
-      'SET_ERRORS_MESSAGE','SET_SUCCESSFUL_REGISTRATION','REPLACE_ACTIVITY']),
+    ...mapMutations('activityModule', ['SET_ERRORS_MESSAGE','SET_SUCCESSFUL_REGISTRATION']),
     ...mapActions('activityModule', ['updateActivity','getActivities']),
 
     async edit(activity: Activity): Promise<void> {
-      this.errors = Object.assign({}, this.errorsDefault);
-      this.activityTemporary = Object.assign({}, activity);
       this.positionActivityTemporary = this.items.indexOf(activity);
+      this.activityTemporary = Object.assign({}, activity);
+      this.errors = Object.assign({}, this.errorsDefault);
       this.dialogForm.visible = true;
     },
 
@@ -167,8 +149,7 @@ export default Vue.extend({
       const dataPost = {
         idActivity: this.activityTemporary.id,
         description: this.activityTemporary.description,
-        date: this.activityTemporary.date,
-        finished: this.activityTemporary.finished
+        date: this.activityTemporary.date
       }
 
       await this.updateActivity(dataPost);
@@ -179,26 +160,18 @@ export default Vue.extend({
           if (error['description']) this.errors.description = error['description'];
           if (error['descripcion']) this.errors.description = error['descripcion'];
           if( error['date']) this.errors.date = error['date'];
-          if (error['finished']) this.errors.finished = error['finished'];
         })
         this.SET_ERRORS_MESSAGE([]);
       }
 
       if (this.successfulRegistration) {
-        // const dataToUpdate = {
-        //   position: this.positionActivityTemporary,
-        //   description: this.activity.description,
-        //   date: this.activity.date,
-        //   finished: this.activity.finished
-        // }
 
         this.dialogForm.visible = false;
         this.snackbar.text = "Se guardó correctamente";
         this.snackbar.visible = true;
-        // this.REPLACE_ACTIVITY(dataToUpdate);
+
         await this.getActivities(this.request);
         this.SET_SUCCESSFUL_REGISTRATION(false);
-        this.SET_ACTIVITY({});
       }
     }
   }

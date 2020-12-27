@@ -32,11 +32,6 @@ const routes: Array<RouteConfig> = [
     },
     children: [
       {
-        path: '/inicio',
-        name: 'Dashboard',
-        component: () => import('../views/app/Dashboard.vue')
-      },
-      {
         path: '/boletas',
         name: 'BakeTicketList',
         component: () => import('../views/app/bake_tickets/BakeTicketList.vue')
@@ -55,6 +50,11 @@ const routes: Array<RouteConfig> = [
         path: '/ajustes',
         name: 'SettingList',
         component: () => import('../views/app/settings/SettingList.vue')
+      },
+      {
+        path: '/reportes',
+        name: 'Reports',
+        component: () => import('../views/app/Reports.vue')
       }
     ]
   }

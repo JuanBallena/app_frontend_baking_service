@@ -36,12 +36,6 @@ export default {
 
     SET_ERRORS_MESSAGE(state: { errorsMessage: string[] }, data: any) {
       state.errorsMessage = data;
-    },
-
-    REPLACE_PLACE_ATTENTION(state: { placesAttention: PlaceAttention[] }, data: any) {
-      state.placesAttention[data['position']].name = data['name'];
-      state.placesAttention[data['position']].abbreviation = data['abbreviation'];
-
     }
   },
 
