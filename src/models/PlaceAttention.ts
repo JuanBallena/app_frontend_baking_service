@@ -5,8 +5,7 @@ export class PlaceAttention {
 
   constructor(
     id: number,
-    name: string,
-    abbreviation: string
+    name: string
   ) {
     this.id = id;
     this.name = name;
@@ -17,8 +16,7 @@ export function toPlaceAttentionModel(data: any): PlaceAttention {
   
   const placeAttentionModel = new PlaceAttention(
     data['id'],
-    data['name'],
-    data['abbreviation']
+    data['name']
   );
   return placeAttentionModel;
 }
